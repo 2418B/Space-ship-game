@@ -2,7 +2,8 @@ import pygame
 def setup():
     
     global pygame, threading, sys, math, thorpy, ship, ship2, ship3, beez, bigfont, smallfont, green, red, blue, black, yellow
-    global white, arrow, clock, ship3_fire, ship2_fire, ship_fire, bullet, random, bounce, fire
+    global white, arrow, clock, ship3_fire, ship2_fire, ship_fire, bullet, random, bounce, fire, explode
+    global disk
     import pygame, threading, sys, math, thorpy, random
     
     ship = pygame.image.load('Ship.png')
@@ -15,6 +16,8 @@ def setup():
     arrow = pygame.image.load('Arrow.png')
     bullet = pygame.image.load('bullet.png')
     fire = pygame.image.load('Fireball.png')
+    explode = ((pygame.image.load('expode1.png')), (pygame.image.load('expode2.png')), (pygame.image.load('expode3.png')), (pygame.image.load('expode4.png')), (pygame.image.load('expode5.png')), (pygame.image.load('expode6.png')), (pygame.image.load('expode7.png')))
+    disk = pygame.image.load('disk.png')
     
     bounce = 0.3
     
@@ -161,18 +164,65 @@ class fireball(projectile):
         
         if self.looped > 10:
             self.kill()
+            
+
+class circle(projectile):
+    
+    def __init__(self, pos, scale, angle, player):
+        #op is opponet
+        super().__init__(pos, scale, angle)     
+        self.player = player
+        self.angle = angle
+        #only used for going forward
+        self.currentAngle = 0
+        self.pos = pos
+        self.speed = 50
+        self.multiplier = self.speed 
+        self.originalImage = scaleImage(disk, 1)
+        self.image = self.originalImage
+        self.rect = self.image.get_rect(center=pos)
+        self.name = "bullet"
+        self.imageName = "bullet"
+        rad = math.radians(self.angle + 180)
+        self.vel = [
+            self.vel[0] + math.sin(rad) * self.multiplier,
+            self.vel[1] + math.cos(rad) * self.multiplier
         
+            
+            ]
+        
+    def update(self):
+
+
+        self.rect = self.image.get_rect(center=self.pos)
+        self.pos = (
+            self.pos[0] + (self.vel[0] * self.speed/1000)/2,
+            self.pos[1] + (self.vel[1] * self.speed/1000)/2
+            )
+        
+        if self.pos[0] < 0 or self.pos[0] > size[0]:
+            self.vel[0] = self.vel[0] * -1
+            
+        if self.pos[1] < 0 or self.pos[1] > size[1]:
+            self.vel[1] = self.vel[1] * -1
+   
+
 #player class
 class Ship(pygame.sprite.Sprite):
     #waffles
     def __init__(self, pos = (500,500)):
         super().__init__()
         
-            
+        self.op = 0
+        #opponent
+        
         global ship,ship_fire
             
         
         self.rect = pos 
+        
+        self.damage = 2
+        #from shooting
             
         self.image = scaleImage(ship, 2)
         self.originalImage = self.image
@@ -195,6 +245,7 @@ class Ship(pygame.sprite.Sprite):
         self.vel = (0,0)
         
     def update(self):
+        self.angle = self.angle % 360  # Value will reapeat after 359. This prevents angle to overflow.
         self.image = self.turnedimage
         if self.currentAngle != self.angle:
             self.image = pygame.transform.rotate(self.originalImage, self.angle)
@@ -249,7 +300,8 @@ class Ship(pygame.sprite.Sprite):
             Go(playsound("lazer.mp3"))
         
     def hit(self, end):
-        self.health -= 1
+        #opponent is op
+        self.health = self.health - self.op.damage
         if self.health < 1:
             end = 0
             self.kill()
@@ -260,12 +312,16 @@ class Ship2(Ship):
     def __init__(self,  pos = (500,500)):
         super().__init__()
         
-            
+        self.op = 0
+        #opponent
+        
         global ship2, ship2_fire
             
         
         self.rect = pos
-            
+        
+        self.damage = 3
+        
         self.image = scaleImage(ship2, 2)
         self.originalImage = self.image
         self.turnedimage = self.image
@@ -284,24 +340,43 @@ class Ship2(Ship):
         self.speed = 14
         
         self.vel = (0,0)
+    
+    def shoot(self, bg):
+        #bg = bullet group
+        
+        self.energy -= 10
+        
+        if self.energy < 0:
+            self.energy += 10
+        
+        else:
+        
+            Bullet = circle(self.pos,2,self.angle,self)
+            bg.add(Bullet)
+        
+            Go(playsound("lazer.mp3"))
         
 class Ship3(Ship):
     
     def __init__(self,  pos = (500,500)):
         super().__init__()
         
+        self.op = 0
+        #opponent
             
         global ship3, ship3_fire
             
         
         self.rect = pos
             
+        self.damage = 1
+        
         self.image = scaleImage(ship3, 2)
         self.originalImage = self.image
         self.turnedimage = self.image
         self.fireimage = scaleImage(ship3_fire, 2)
         self.Originfireimage = self.fireimage
-        self.health = 20
+        self.health = 13
         
         self.energy = 17
         self.energyrecover = 1.5
@@ -318,10 +393,10 @@ class Ship3(Ship):
     def shoot(self, bg):
         #bg = bullet group
         
-        self.energy -= 10
+        self.energy -= 15
         
         if self.energy < 0:
-            self.energy += 10
+            self.energy += 15
         
         else:
         
@@ -367,7 +442,7 @@ class battle():
             winner = smallfont.render("You beat the sniper bot", True, white) 
         
         if win == 0:
-            winner = smallfont.render("Ha, you lose take the L", True, white)     
+            winner = smallfont.render("Ha, you lose, L", True, white)     
         
         
         screen.blit(end,(400,400)) 
@@ -395,7 +470,7 @@ class battle():
             
         
     def update(self):
-        global black, screen, pygame, clock, ship3_fire, smallfont, math, bounce, green
+        global black, screen, pygame, clock, ship3_fire, smallfont, math, bounce, green, explode
         
         background = pygame.Surface(screen.get_size())
         background = background.convert()
@@ -415,6 +490,10 @@ class battle():
             
         if CPU == 3:
             self.update()    
+        
+        CPU.op = self.Player1
+        
+        self.Player1.op = CPU
         
         self.ShipGroup = pygame.sprite.Group()
         self.ShipGroup.add(self.Player1)
@@ -460,17 +539,78 @@ class battle():
                 if self.Player1.rect.colliderect(Bullet.rect):
                     Bullet.kill()
                     self.Player1.hit(self.going)
+            if not self.ShipGroup.has(self.Player1):
+                if self.index > 15:
+                    self.index = 1
+                if self.index == 1:
+                    screen.blit(scaleImage(explode[0], 2), self.Player1.pos)
+                if self.index == 2:
+                    screen.blit(scaleImage(explode[0], 2), self.Player1.pos)
+                if self.index == 3:
+                    screen.blit(scaleImage(explode[1], 2), self.Player1.pos)
+                if self.index == 4:
+                    screen.blit(scaleImage(explode[1], 2), self.Player1.pos)
+                if self.index == 5:
+                    screen.blit(scaleImage(explode[2], 2), self.Player1.pos)
+                if self.index == 6:
+                    screen.blit(scaleImage(explode[2], 2), self.Player1.pos)
+                if self.index == 7:
+                    screen.blit(scaleImage(explode[3], 2), self.Player1.pos)
+                if self.index == 8:
+                    screen.blit(scaleImage(explode[3], 2), self.Player1.pos)
+                if self.index == 9:
+                    screen.blit(scaleImage(explode[4], 2), self.Player1.pos)
+                if self.index == 10:
+                    screen.blit(scaleImage(explode[4], 2), self.Player1.pos)
+                if self.index == 11:
+                    screen.blit(scaleImage(explode[5], 2), self.Player1.pos)
+                if self.index == 12:
+                    screen.blit(scaleImage(explode[5], 2), self.Player1.pos)
+                if self.index == 13:
+                    screen.blit(scaleImage(explode[6], 2), self.Player1.pos)
+                if self.index == 14:
+                    screen.blit(scaleImage(explode[6], 2), self.Player1.pos)
+                if self.index == 15:
+                    self.going = 0
+                    self.end(0)
+            
+            if not self.ShipGroup.has(CPU):
+                if self.index > 15:
+                    self.index = 1
+                if self.index == 1:
+                    screen.blit(scaleImage(explode[0], 2), CPU.pos)
+                if self.index == 2:
+                    screen.blit(scaleImage(explode[0], 2), CPU.pos)
+                if self.index == 3:
+                    screen.blit(scaleImage(explode[1], 2), CPU.pos)
+                if self.index == 4:
+                    screen.blit(scaleImage(explode[1], 2), CPU.pos)
+                if self.index == 5:
+                    screen.blit(scaleImage(explode[2], 2), CPU.pos)
+                if self.index == 6:
+                    screen.blit(scaleImage(explode[2], 2), CPU.pos)
+                if self.index == 7:
+                    screen.blit(scaleImage(explode[3], 2), CPU.pos)
+                if self.index == 8:
+                    screen.blit(scaleImage(explode[3], 2), CPU.pos)
+                if self.index == 9:
+                    screen.blit(scaleImage(explode[4], 2), CPU.pos)
+                if self.index == 10:
+                    screen.blit(scaleImage(explode[4], 2), CPU.pos)
+                if self.index == 11:
+                    screen.blit(scaleImage(explode[5], 2), CPU.pos)
+                if self.index == 12:
+                    screen.blit(scaleImage(explode[5], 2), CPU.pos)
+                if self.index == 13:
+                    screen.blit(scaleImage(explode[6], 2), CPU.pos)
+                if self.index == 14:
+                    screen.blit(scaleImage(explode[6], 2), CPU.pos)
+                if self.index == 15:
+                    self.going = 0
+                    self.end(1) 
             
             CPU_distance = ((self.Player1.pos[0]-CPU.pos[0]) , (self.Player1.pos[1]-CPU.pos[1]))
             #for calculating turn
-            
-            if not self.ShipGroup.has(self.Player1):
-                self.going = 0
-                self.end(0) 
-            
-            if not self.ShipGroup.has(CPU):
-                self.going = 0
-                self.end(1) 
             
             if CPU_distance[1] > 0:
                 CPU.angle = math.degrees(math.atan(CPU_distance[0]/-CPU_distance[1]))
@@ -483,9 +623,8 @@ class battle():
             #move and shoot
             CPU.moveForward()
             
-            if not CPU.energy < 10 and self.going == 1:
                 
-                CPU.shoot(self.CPUBullet)
+            CPU.shoot(self.CPUBullet)
             
             
             self.P1BulletGroup.draw(screen)
@@ -502,9 +641,10 @@ class battle():
             self.P1BulletGroup.update()
             self.CPUBullet.update()
             
+            self.index += 1
+            
             clock.tick(24)
             
-            self.index += 1
            
 
 class menu():
