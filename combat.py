@@ -1,24 +1,94 @@
-#!/usr/bin/env python3
 import pygame
+
+#!/usr/bin/env python3
+
+cache = True # Cache images, sprites, icons to the folder cache/ This also allows you to play the game without wifi. Recemended True if running on a local machine
+
 def setup():
     
     global pygame, threading, sys, math, thorpy, ship, ship2, ship3, beez, bigfont, smallfont, green, red, blue, black, yellow
     global white, arrow, clock, ship3_fire, ship2_fire, ship_fire, bullet, random, bounce, fire, explode
-    global disk
-    import pygame, threading, sys, math, thorpy, random
+    global disk, rock, os, requests, io, ship4, ship4_fire, lazerbase, lazercap
+    import pygame, threading, sys, math, thorpy, random, os, requests, io
     
-    ship = pygame.image.load('Ship.png')
-    ship_fire = pygame.image.load('Ship_withfire.png')
-    ship2 = pygame.image.load('Ship2_nofire.png')
-    ship2_fire = pygame.image.load('Ship2.png')
-    ship3 = pygame.image.load('Ship3_nofire.png')
-    ship3_fire = pygame.image.load('Ship3.png')
-    beez = pygame.image.load('Beez.gif')
-    arrow = pygame.image.load('Arrow.png')
-    bullet = pygame.image.load('bullet.png')
-    fire = pygame.image.load('Fireball.png')
-    explode = ((pygame.image.load('expode1.png')), (pygame.image.load('expode2.png')), (pygame.image.load('expode3.png')), (pygame.image.load('expode4.png')), (pygame.image.load('expode5.png')), (pygame.image.load('expode6.png')), (pygame.image.load('expode7.png')))
-    disk = pygame.image.load('disk.png')
+    
+    
+    try:
+        ship = pygame.image.load('Ship.png')
+        ship_fire = pygame.image.load('Ship_withfire.png')
+        ship2 = pygame.image.load('Ship2_nofire.png')
+        ship2_fire = pygame.image.load('Ship2.png')
+        ship3 = pygame.image.load('Ship3_nofire.png')
+        ship3_fire = pygame.image.load('Ship3.png')
+        beez = pygame.image.load('Beez.gif')
+        arrow = pygame.image.load('Arrow.png')
+        bullet = pygame.image.load('bullet.png')
+        fire = pygame.image.load('Fireball.png')
+        explode = ((pygame.image.load('expode1.png')), (pygame.image.load('expode2.png')), (pygame.image.load('expode3.png')), (pygame.image.load('expode4.png')), (pygame.image.load('expode5.png')), (pygame.image.load('expode6.png')), (pygame.image.load('expode7.png')))
+        disk = pygame.image.load('disk.png')
+        rock = pygame.image.load('enemy.png')
+        ship4 = pygame.image.load('Ship4.png')
+        ship4_fire = pygame.image.load('Ship4_fire.png')
+        lazerbase = pygame.image.load('Lazer.png')
+    
+    except Exception as e:
+        print(e.args)
+        print(e.with_traceback)
+        print("images not in directory loading from web")
+        
+        try:
+            ship = imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/Ship.png")
+            ship_fire = imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/Ship_withfire.png")
+            ship2 = imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/Ship2.png")
+            ship2_fire = imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/Ship2_nofire.png")
+            ship3 = imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/Ship3_nofire.png")
+            ship3_fire = imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/Ship3.png")
+            arrow = imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/Arrow.png")
+            bullet = imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/bullet.png")
+            fire = imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/Fireball.png")
+            explode = ((imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/expode1.png"))
+                       , (imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/expode2.png"))
+                       , (imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/expode3.png"))
+                       , (imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/expode4.png"))
+                       , (imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/expode5.png"))
+                       , (imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/expode6.png"))
+                       , (imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/expode7.png")))
+            disk = imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/disk.png")
+            rock = imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/enemy.png")
+            ship4 = imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/Ship4.png")
+            ship4_fire = imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/Ship4_fire.png")
+            lazerbase = imageFromUrl("https://raw.githubusercontent.com/2418B/Space-ship-game/main/Lazer.png")
+            
+            ship = pygame.image.load(ship)
+            ship_fire = pygame.image.load(ship_fire)
+            ship2 = pygame.image.load(ship2)
+            ship2_fire = pygame.image.load(ship2_fire)
+            ship3 = pygame.image.load(ship3)
+            ship3_fire = pygame.image.load(ship3_fire)
+            arrow = pygame.image.load(arrow)
+            bullet = pygame.image.load(bullet)
+            fire = pygame.image.load(fire)
+            explode = ((pygame.image.load(explode[0])),
+            (pygame.image.load(explode[1])), 
+            (pygame.image.load(explode[2])), 
+            (pygame.image.load(explode[3])), 
+            (pygame.image.load(explode[4])), 
+            (pygame.image.load(explode[5])), 
+            (pygame.image.load(explode[6])))
+            disk = pygame.image.load(disk)
+            rock = pygame.image.load(rock)
+            ship4 = pygame.image.load(ship4)
+            ship4_fire = pygame.image.load(ship4_fire)
+            lazerbase = pygame.image.load(lazerbase)
+            
+        except Exception as e:
+            print(e.args)
+            print(e.with_traceback)
+            print("Error loading assets check interwebs")
+            sys.exit()
+    
+    
+    
     
     bounce = 0.3
     
@@ -26,7 +96,7 @@ def setup():
     green = (0,250,0)
     blue = (0,0,250)
     red = (250,0,0)
-    black = (0,0,0)
+    black = (0,0,0) 
     white = (250,250,250)
     yellow = (250, 250, 0)
     
@@ -44,23 +114,48 @@ def setup():
     smallfont = pygame.font.Font(None, 32)
     
 
+
+
 #threading function
-def Go(y):    
+def Go(y):
+    import threading
     x = threading.Thread(target=y, args=(1))
     x.start()
 
+def imageFromUrl(url):
+    r = requests.get(url)
+    img = io.BytesIO(r.content)
+    return img
+
+
 def play(x, loop = -1):
     #a function for playing music via threadding.
-    pygame.mixer.music.load(x)
-    pygame.mixer.music.play(loop)
+    try:
+        pygame.mixer.music.load(x)
+        pygame.mixer.music.play(loop)
+    
+    except Exception as e:
+        print(e.args)
+        print(e.with_traceback)
+        print("Please put audio in diresctory for better workage.")
+        
+    
 def playsound(x):
-    pygame.mixer.Sound.play(pygame.mixer.Sound(x))
+    try:
+        pygame.mixer.Sound.play(pygame.mixer.Sound(x))
+    
+    except Exception as e:
+         print(e.args)
+         print(e.with_traceback)
+         print("Please put audio in diresctory for better workage.")
+         
+    
 def stop():
     pygame.mixer.music.unload()
 def scaleImage(img, scale):
     size = img.get_size()
     img = pygame.transform.scale(img, (int(size[0]*scale), int(size[1]*scale)))
-    return img  
+    return img
 def BGM(song):
     #background music
     if song == 1:
@@ -166,6 +261,52 @@ class fireball(projectile):
         if self.looped > 10:
             self.kill()
             
+class Lazer(projectile):
+    #fire ball class 
+     def __init__(self, pos, scale, angle,bg, img):
+         global lazerbase, lazercap
+         super().__init__(pos, scale, angle)
+         self.bg = bg
+         #bullet group
+         self.angle = angle
+         self.currentAngle = 0
+         self.pos = pos
+         self.speed = 300
+         self.multiplier = self.speed 
+         self.originalImage = scaleImage(lazerbase, scale)
+         self.image = self.originalImage
+         self.rect = self.image.get_rect(center=pos)
+         self.name = "bullet"
+         self.imageName = "bullet"
+         self.vel = (0,0)
+         self.looped = 0
+         if self.currentAngle != self.angle:
+             self.image = pygame.transform.rotate(self.originalImage, self.angle)
+             self.angle = self.angle % 360  # Value will reapeat after 359. This prevents angle to overflow.
+             self.currentAngle = self.angle
+         rad = math.radians(self.angle + 180)
+         self.vel = (
+             self.vel[0] + math.sin(rad) * self.multiplier,
+             self.vel[1] + math.cos(rad) * self.multiplier
+         
+             
+             )
+     def update(self):
+
+        self.looped += 1
+        self.rect = self.image.get_rect(center=self.pos)
+        self.pos = (
+            self.pos[0] + (self.vel[0] * self.speed/1000)/2,
+            self.pos[1] + (self.vel[1] * self.speed/1000)/2
+            )
+        
+        if self.pos[0] < 0 or self.pos[0] > size[0]:
+            self.kill()
+            
+        if self.pos[1] < 0 or self.pos[1] > size[1]:
+            self.kill()
+        
+            
 
 class circle(projectile):
     
@@ -207,6 +348,23 @@ class circle(projectile):
         if self.pos[1] < 0 or self.pos[1] > size[1]:
             self.vel[1] = self.vel[1] * -1
    
+    
+class Rock(pygame.sprite.Sprite):
+    #asteroid class
+        def __init__(self):
+            super().__init__()
+            
+            global rock
+            
+            self.image = scaleImage(rock, 3)
+            
+            self.pos = ( (random.randrange(0,1000)), (random.randrange(0,800)) )
+            
+            self.rect = self.image.get_rect(center=self.pos)
+            
+            
+            
+            
 
 #player class
 class Ship(pygame.sprite.Sprite):
@@ -219,6 +377,9 @@ class Ship(pygame.sprite.Sprite):
         
         global ship,ship_fire
             
+        self.shooting = 0
+        self.shooting2 = self.shooting
+        #only used in ship 4 so far
         
         self.rect = pos 
         
@@ -243,7 +404,7 @@ class Ship(pygame.sprite.Sprite):
         
         self.speed = 10
         
-        self.vel = (0,0)
+        self.vel = [0,0]
         
     def update(self):
         self.angle = self.angle % 360  # Value will reapeat after 359. This prevents angle to overflow.
@@ -276,13 +437,15 @@ class Ship(pygame.sprite.Sprite):
         self.energy = self.energy + self.energyrecover
         if self.energy > self.maxenergy:
             self.energy = self.maxenergy
+        if self.shooting2 < self.shooting:
+            self.shooting = self.shooting2
     
     def moveForward(self):
         rad = math.radians(self.angle + 180)
-        self.vel = (
+        self.vel = [
             self.vel[0] + math.sin(rad) * self.speed,
             self.vel[1] + math.cos(rad) * self.speed
-                    )
+                    ]
         self.image = self.fireimage
     
     def shoot(self, bg):
@@ -318,6 +481,9 @@ class Ship2(Ship):
         
         global ship2, ship2_fire
             
+        self.shooting = 0
+        self.shooting2 = self.shooting
+        #only used in ship 4 so far
         
         self.rect = pos
         
@@ -340,7 +506,7 @@ class Ship2(Ship):
         
         self.speed = 14
         
-        self.vel = (0,0)
+        self.vel = [0,0]
     
     def shoot(self, bg):
         #bg = bullet group
@@ -367,6 +533,9 @@ class Ship3(Ship):
             
         global ship3, ship3_fire
             
+        self.shooting = 0
+        self.shooting2 = self.shooting
+        #only used in ship 4 so far
         
         self.rect = pos
             
@@ -389,7 +558,7 @@ class Ship3(Ship):
         
         self.speed = 8
         
-        self.vel = (0,0)
+        self.vel = [0,0]
     
     def shoot(self, bg):
         #bg = bullet group
@@ -411,10 +580,63 @@ class Ship3(Ship):
             bg.add(Bullet)
         
             Go(playsound("fire.mp3"))
+            
+class Ship4(Ship):
+    
+    def __init__(self,  pos = (500,500)):
+        super().__init__()
+        
+        self.op = 0
+        #opponent
+            
+        global ship4, ship4_fire
+            
+        
+        self.shooting = 0
+        self.shooting2 = self.shooting
+        #only used in ship 4 so far
+        
+        self.rect = pos
+            
+        self.damage = 1
+        
+        self.image = scaleImage(ship4, 2)
+        self.originalImage = self.image
+        self.turnedimage = self.image
+        self.fireimage = scaleImage(ship4_fire, 2)
+        self.Originfireimage = self.fireimage
+        self.health = 18
+        
+        self.energy = 19
+        self.energyrecover = 4
+        self.maxenergy = self.energy
+        
+        self.angle = 0
+        self.currentAngle = 0
+        self.pos = self.rect
+        
+        self.speed = 6
+        
+        self.vel = [0,0]
+    
+    def shoot(self, bg):
+        #bg = bullet group
+        
+        self.energy -= 15
+        
+        if self.energy < 0:
+            self.energy += 15
+        
+        else:
+            
+            Bullet = Lazer(pos = self.pos, scale = 2, angle = self.angle, bg = bg, img = lazerbase)
+            bg.add(Bullet)
+            
+            Go(playsound("fire.mp3"))
 
 class battle():
     
-    def __init__(self, p1,music = 0):
+    def __init__(self, p1,music = 0, opponent = -1):
         global pygame
         
         Go(stop())
@@ -425,10 +647,13 @@ class battle():
             self.Player1 = Ship2()
         if p1 == 2:
             self.Player1 = Ship3()
+        if p1 == 3:
+            self.Player1 = Ship4()
+            
         
         Go(BGM(music))
 
-        self.update()
+        self.update(opponent)
         
     
     def end(self,win):
@@ -467,17 +692,20 @@ class battle():
                 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
-                        Menu = menu()
-            
-        
-    def update(self):
+                        Menu = menu() 
+    
+    
+    
+    def update(self, opponent = -1):
         global black, screen, pygame, clock, ship3_fire, smallfont, math, bounce, green, explode
         
         background = pygame.Surface(screen.get_size())
         background = background.convert()
         background.fill(black)
         
-        CPU = random.randrange(0,3)
+        if opponent == -1:
+        
+            CPU = random.randrange(0,3)
         
         if CPU == 0:
         
@@ -490,7 +718,7 @@ class battle():
             CPU = Ship3((300,200))
             
         if CPU == 3:
-            self.update()    
+            CPU = Ship4((300,200))
         
         CPU.op = self.Player1
         
@@ -502,16 +730,22 @@ class battle():
         
         self.P1BulletGroup = pygame.sprite.Group()
         self.CPUBullet = pygame.sprite.Group()
+        self.AsterGroup = pygame.sprite.Group()
         
         self.going = 1
         
         self.index = 0
+        
+        Aster = Rock()
+    
+        self.AsterGroup.add(Aster)
         
         while self.going == 1:
             
             p1health = smallfont.render(str(self.Player1.health), True, green)
             cpuhealth = smallfont.render(str(CPU.health), True, green)
             #updating text
+            
         
         
             #input part
@@ -536,6 +770,17 @@ class battle():
                 if CPU.rect.colliderect(Bullet.rect):
                     Bullet.kill()
                     CPU.hit(self.going)
+            for Bullet in self.P1BulletGroup or self.CPUBullet:
+                if Aster.rect.colliderect(Bullet.rect):
+                    Bullet.kill()
+            for Aster in self.AsterGroup:
+                if Aster.rect.colliderect(self.Player1.image.get_rect(center=self.Player1.pos)):
+                    self.Player1.vel[0] = self.Player1.vel[0] * -1
+                    self.Player1.vel[1] = self.Player1.vel[1] * -1
+            for Aster in self.AsterGroup:
+                if Aster.rect.colliderect(CPU.image.get_rect(center=CPU.pos)):
+                    CPU.vel[0] = CPU.vel[0] * -bounce 
+                    CPU.vel[1] = CPU.vel[1] * -bounce 
             for Bullet in self.CPUBullet:
                 if self.Player1.rect.colliderect(Bullet.rect):
                     Bullet.kill()
@@ -545,6 +790,8 @@ class battle():
                     self.index = 1
                 if self.index == 1:
                     screen.blit(scaleImage(explode[0], 2), self.Player1.pos)
+                    pygame.mixer.stop()
+                    playsound("explode.mp3")
                 if self.index == 2:
                     screen.blit(scaleImage(explode[0], 2), self.Player1.pos)
                 if self.index == 3:
@@ -580,6 +827,8 @@ class battle():
                     self.index = 1
                 if self.index == 1:
                     screen.blit(scaleImage(explode[0], 2), CPU.pos)
+                    pygame.mixer.stop()
+                    playsound("explode.mp3")
                 if self.index == 2:
                     screen.blit(scaleImage(explode[0], 2), CPU.pos)
                 if self.index == 3:
@@ -616,10 +865,12 @@ class battle():
             if CPU_distance[1] > 0:
                 CPU.angle = math.degrees(math.atan(CPU_distance[0]/-CPU_distance[1]))
                 CPU.angle = 180 - (CPU.angle + math.pi)
+                CPU.angle = CPU.angle + (CPU.speed)
             
             else:
                 
                 CPU.angle = math.degrees(math.atan(CPU_distance[0]/CPU_distance[1]))
+                CPU.angle = CPU.angle + (CPU.speed)
             
             #move and shoot
             CPU.moveForward()
@@ -631,6 +882,7 @@ class battle():
             self.P1BulletGroup.draw(screen)
             self.CPUBullet.draw(screen)
             self.ShipGroup.draw(screen)
+            self.AsterGroup.draw(screen)
             
             
             screen.blit(p1health,(0,0))
@@ -641,6 +893,7 @@ class battle():
             self.ShipGroup.update()
             self.P1BulletGroup.update()
             self.CPUBullet.update()
+            self.AsterGroup.update()
             
             self.index += 1
             
@@ -651,7 +904,7 @@ class battle():
 class menu():
     
     def __init__(self):
-        global size, screen
+        global size, screen, shinymall
         size = (1000,800)
         screen = pygame.display.set_mode(size)
         self.size = size
@@ -666,7 +919,7 @@ class menu():
         
         
     def update(self):
-        global ship, ship2, ship3, screen, bigfont, smallfont, white, arrow, black, clock
+        global ship, ship2, ship3, screen, bigfont, smallfont, white, arrow, black, clock, ship4
         P1 = smallfont.render("Player1's ship", True, white)
         songtype = smallfont.render("song?", True, white)
         start = bigfont.render("start?", True, yellow)
@@ -717,10 +970,10 @@ class menu():
             
             songtxt = smallfont.render(song, True, white)
             #a bit of logic
-            if self.P1 > 2:
+            if self.P1 > 3:
                 self.P1 = 0
             if self.P1 < 0:
-                self.P1 = 2
+                self.P1 = 3
             if self.select < 0:
                 self.select = 0
             if self.bgm < 0:
@@ -742,6 +995,8 @@ class menu():
                 screen.blit(scaleImage(ship2, 10),(235,525))
             if self.P1 == 2:
                 screen.blit(scaleImage(ship3, 10),(220,550))
+            if self.P1 == 3:
+                screen.blit(scaleImage(ship4, 5),(220,550))
             if self.select > 0:
                 screen.blit(songtxt,(600,150))
                 screen.blit(songtype, (600,100))
