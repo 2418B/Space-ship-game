@@ -6,10 +6,10 @@ cache = True # Cache images, sprites, icons to the folder cache/ This also allow
 
 def setup():
     
-    global pygame, threading, sys, math, thorpy, ship, ship2, ship3, beez, bigfont, smallfont, green, red, blue, black, yellow
+    global pygame, threading, sys, math, ship, ship2, ship3, beez, bigfont, smallfont, green, red, blue, black, yellow
     global white, arrow, clock, ship3_fire, ship2_fire, ship_fire, bullet, random, bounce, fire, explode
     global disk, rock, os, requests, io, ship4, ship4_fire, lazerbase, lazercap
-    import pygame, threading, sys, math, thorpy, random, os, requests, io
+    import pygame, threading, sys, math, random, os, requests, io
     
     
     
